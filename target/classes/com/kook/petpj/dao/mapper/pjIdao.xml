@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace = "com.kook.petpj.dao.pjIDao">
+	<!-- DAO join id는 인터페이스 메서드명이랑 매핑 -->
+	
+	<!-- 회원가입 -->
+	<insert id="join" parameterType="com.kook.petpj.dto.JoinDto">
+		insert into USER_DB(PID,PPW,pname,pbirth,pmail) 
+		values(#{pid},#{ppw},#{pname},#{pbirth},#{pmail})
+	</insert>
+		<!-- login -->
+	<select id="login" parameterType="String" resultType="com.kook.petpj.dto.JoinDto">
+		SELECT * FROM USER_DB WHERE PID = #{pid}
+	</select>
+	
+	<!-- 아이디 찾기  -->
+	<select id="find_id" parameterType="String" resultType="com.kook.petpj.dto.JoinDto">
+		SELECT PID FROM USER_DB WHERE PMAIL = #{pmail}
+	</select>
+	
+	
+	<!-- 김유진 -->
+	   <!-- notice -->
+   <select id="list" resultType="com.kook.petpj.dto.NoticeDto">
+      SELECT * FROM NOTICE
+   </select>
+   <insert id="nwrite" parameterType="com.kook.petpj.dto.NoticeDto">
+      insert into NOTICE (nId, nWriter, nPw, nTitle, nContent, nHit)
+      values(NOTICE_seq.nextval, #{nWriter}, #{nPw}, #{nTitle}, #{nContent}, 0)
+   </insert>
+   <select id="contentView" parameterType="int" resultType="com.kook.petpj.dto.NoticeDto">
+      SELECT * FROM NOTICE WHERE NID = #{nId}
+   </select>
+   <update id="modify" parameterType="com.kook.petpj.dto.NoticeDto">
+      UPDATE NOTICE SET NTITLE = #{nTitle}, NCONTENT=#{nContent}
+      WHERE nID = #{nId}
+   </update>
+   <delete id="delete" parameterType="int">
+      DELETE FROM NOTICE WHERE NID = #{nId}
+   </delete>
+   <update id="upHit" parameterType="int">
+      UPDATE NOTICE SET nHIT=NHIT + 1 WHERE NID=#{nId}
+   </update>
+   <select id="pageList" parameterType="int" resultType="com.kook.petpj.dto.NoticeDto">
+      <![CDATA[
+         SELECT * FROM(SELECT A.*, ROWNUM AS RNUM 
+         FROM(SELECT * FROM NOTICE)A)
+         WHERE RNUM >= #{start} AND RNUM <= #{start} + 9
+      ]]>
+   </select>
+   
+   <!-- FAQ -->
+   <select id="flist" resultType="com.kook.petpj.dto.FAQDto">
+      <![CDATA[
+         select * from(select A.*,rownum as rnum 
+         from(select * from FAQ order by fgroup desc,fstep asc)A) 
+         where rnum < 11
+       ]]>
+   </select>
+   <insert id="fwrite" parameterType="com.kook.petpj.dto.FAQDto">
+      insert into FAQ (fId, fName, fTitle, fContent, fHit, fGroup, fStep, fIndent)
+      values(FAQ_seq.nextval, #{fName},#{fTitle}, #{fContent}, 0, FAQ_seq.currval, 0, 0)
+   </insert>
+   <select id="fcontentView" parameterType="int" resultType="com.kook.petpj.dto.FAQDto">
+      SELECT * FROM FAQ WHERE FID = #{fId}
+   </select>
+   <update id="fmodify" parameterType="com.kook.petpj.dto.FAQDto">
+      UPDATE FAQ SET FTITLE = #{fTitle}, FCONTENT = #{fContent}
+      WHERE fID = #{fId}
+   </update>
+   <delete id="fdelete" parameterType="int">
+      DELETE FROM FAQ WHERE FID = #{fId}
+   </delete>
+   <update id="upHit1" parameterType="int">
+      UPDATE FAQ SET fHIT=FHIT + 1 WHERE FID=#{fId}
+   </update>
+   <select id="pageList1" parameterType="int" resultType="com.kook.petpj.dto.FAQDto">
+      <![CDATA[
+         SELECT * FROM(SELECT A.*,ROWNUM AS RNUM 
+          FROM(SELECT * FROM FAQ ORDER BY FGROUP DESC, FSTEP ASC)A)
+          WHERE RNUM >= #{start} AND RNUM <= #{start} + 9
+      ]]>
+   </select>
+   
+   <!-- QnA -->
+   <select id="qlist" resultType="com.kook.petpj.dto.QNADto">
+      <![CDATA[
+         select * from(select A.*,rownum as rnum 
+         from(select * from QNA order by qgroup desc,qstep asc)A) 
+         where rnum < 11
+       ]]>
+   </select>
+   <insert id="qwrite" parameterType="com.kook.petpj.dto.QNADto">
+      insert into QNA (qId, qWriter, qTitle, qContent, qSecret, qHit, qGroup, qStep, qIndent)
+      values(QNA_seq.nextval, #{qWriter}, #{qTitle}, #{qContent}, #{qSecret}, 0, QNA_seq.currval, 0, 0)
+   </insert>
+   <select id="qcontentView" parameterType="int" resultType="com.kook.petpj.dto.QNADto">
+      SELECT * FROM QNA WHERE QID = #{qId}
+   </select>
+   <update id="qmodify" parameterType="com.kook.petpj.dto.QNADto">
+      UPDATE QNA SET QTITLE = #{qTitle}, QCONTENT = #{qContent}
+      WHERE qID = #{qId}
+   </update>
+   <delete id="qdelete" parameterType="int">
+      DELETE FROM QNA WHERE qID = #{qId}
+   </delete>
+   <update id="upHit2" parameterType="int">
+      UPDATE QNA SET qHIT=QHIT + 1 WHERE QID=#{qId}
+   </update>
+   <select id="pageList2" parameterType="int" resultType="com.kook.petpj.dto.QNADto">
+      <![CDATA[
+         SELECT * FROM(SELECT A.*,ROWNUM AS RNUM 
+          FROM(SELECT * FROM QNA ORDER BY FGROUP DESC, FSTEP ASC)A)
+          WHERE RNUM >= #{start} AND RNUM <= #{start} + 9
+      ]]>
+   </select>
+   
+   <!-- Reply -->
+   <select id="QnA_reply_view" parameterType="int" resultType="com.kook.petpj.dto.QNADto">
+      SELECT * FROM QNA WHERE qID = #{qId}
+   </select>   
+   <insert id="qreply" parameterType="com.kook.petpj.dto.QNADto">
+      insert into qna (qId, qWriter, qTitle, qContent, qSecret, qGroup, qStep, qIndent)
+      values(qna_seq.nextval,#{qWriter},#{qTitle},#{qContent},#{qSecret}, #{qGroup},#{qStep}+1,#{qIndent}+1)
+   </insert>
+   <update id="qreplyShape" parameterType="com.kook.petpj.dto.QNADto">
+      UPDATE QNA SET QSTEP=QSTEP + 1 WHERE QGROUP=#{qGroup} AND QSTEP > #{qStep}
+   </update>
+   <!-- 김유진-->
+   
+   <!-- =================================================================== -->
+   
+   <!-- 김태석 -->
+<!-- product -->
+	<select id="productList" resultType="com.kook.petpj.dto.ProductDto">
+		SELECT * FROM PRODUCT ORDER BY APHOTO DESC
+	</select>
+	
+	<insert id="productWrite" parameterType="com.kook.petpj.dto.ProductDto">
+		INSERT INTO PRODUCT (APHOTO,QID,ANAME,APRICE,ADESC) 
+		VALUES (#{aPhoto},#{qId},#{aName},#{aPrice},#{aDesc})
+	</insert>
+	
+	<select id="productDetailView" parameterType="String" 	resultType="com.kook.petpj.dto.ProductDto">
+		SELECT * FROM PRODUCT WHERE APHOTO = #{aPhoto}	 
+	</select>
+   <!-- 김태석 -->
+
+</mapper>
